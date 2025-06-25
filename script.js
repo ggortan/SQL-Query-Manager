@@ -80,6 +80,9 @@ class SQLQueryManager {
         document.getElementById('queryEditor').value = query.sql;
         this.updateVariablesPanel();
         this.updatePreview();
+        
+        // Auto-resize após carregar
+        setTimeout(() => this.autoResizeTextarea(), 10);
     }
 
     updateCurrentQuery() {
@@ -177,6 +180,26 @@ class SQLQueryManager {
         processedSQL = this.highlightSQL(processedSQL);
         preview.innerHTML = processedSQL || '<span class="text-muted">Query vazia...</span>';
     }
+
+    handleQueryInput() {
+    this.updateCurrentQuery();
+    this.updatePreview();
+    this.autoResizeTextarea();
+}
+
+autoResizeTextarea() {
+    const textarea = document.getElementById('queryEditor');
+    textarea.style.height = 'auto';
+    
+    // Calcular altura mínima e máxima
+    const minHeight = 150; // altura mínima em pixels
+    const maxHeight = window.innerHeight * 0.6; // máximo 60% da altura da tela
+    
+    const scrollHeight = textarea.scrollHeight;
+    const newHeight = Math.max(minHeight, Math.min(scrollHeight + 10, maxHeight));
+    
+    textarea.style.height = newHeight + 'px';
+}
 
     highlightSQL(sql) {
         // Palavras-chave SQL
@@ -375,6 +398,10 @@ class SQLQueryManager {
                 <small>Use [nome_variavel] na query</small>
             </div>
         `;
+        
+        // Reset textarea height
+        const textarea = document.getElementById('queryEditor');
+        textarea.style.height = '150px';
     }
 
     updateUI() {
@@ -496,3 +523,15 @@ function confirmImport(mode) {
 if (queryManager.queries.length > 0) {
     queryManager.selectQuery(0);
 }
+
+// Função global para o input
+function handleQueryInput() {
+    queryManager.handleQueryInput();
+}
+
+// Listener para redimensionar textarea quando a janela muda de tamanho
+window.addEventListener('resize', () => {
+    if (queryManager.currentQueryIndex >= 0) {
+        setTimeout(() => queryManager.autoResizeTextarea(), 10);
+    }
+});
