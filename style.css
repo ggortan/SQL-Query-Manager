@@ -52,7 +52,7 @@ body {
 
 .sql-editor {
     font-family: 'Courier New', monospace;
-    resize: none;
+    resize: vertical;
     border: 1px solid #dee2e6;
     border-radius: 0.375rem;
     padding: 1rem;
