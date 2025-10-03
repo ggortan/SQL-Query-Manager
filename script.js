@@ -12,6 +12,14 @@ class SQLQueryManager {
         if (stored) {
             try {
                 this.queries = JSON.parse(stored);
+                // Migrar queries existentes para incluir o atributo order
+                this.queries.forEach((query, index) => {
+                    if (query.order === undefined) {
+                        query.order = index;
+                    }
+                });
+                // Ordenar queries por order
+                this.queries.sort((a, b) => a.order - b.order);
             } catch (e) {
                 console.error('Erro ao carregar queries do localStorage:', e);
                 this.loadDefaultQueries();
@@ -30,7 +38,8 @@ class SQLQueryManager {
                 variables: {
                     "ativo": "1",
                     "data_inicio": "2024-01-01"
-                }
+                },
+                order: 0
             }
         ];
         this.saveQueries();
@@ -56,7 +65,8 @@ class SQLQueryManager {
             id: Date.now(),
             name: `Nova Query ${this.queries.length + 1}`,
             sql: "",
-            variables: {}
+            variables: {},
+            order: this.queries.length
         };
         
         this.queries.push(newQuery);
@@ -309,11 +319,13 @@ autoResizeTextarea() {
         if (mode === 'add') {
             // Adicionar às existentes - ajustar IDs para evitar conflitos
             const maxId = this.queries.length > 0 ? Math.max(...this.queries.map(q => q.id)) : 0;
+            const currentMaxOrder = this.queries.length > 0 ? Math.max(...this.queries.map(q => q.order || 0)) : -1;
             
             processedQueries = importedQueries.map((query, index) => ({
                 ...query,
                 id: maxId + index + 1,
-                name: this.getUniqueName(query.name)
+                name: this.getUniqueName(query.name),
+                order: currentMaxOrder + index + 1
             }));
             
             // Adicionar às queries existentes
@@ -321,8 +333,14 @@ autoResizeTextarea() {
             
             this.showToast(`${importedQueries.length} queries adicionadas com sucesso! Total: ${this.queries.length}`, 'success');
         } else {
-            // Substituir todas
+            // Substituir todas - garantir que todas têm order
+            processedQueries = importedQueries.map((query, index) => ({
+                ...query,
+                order: query.order !== undefined ? query.order : index
+            }));
             this.queries = processedQueries;
+            // Ordenar queries por order
+            this.queries.sort((a, b) => a.order - b.order);
             this.showToast(`${importedQueries.length} queries importadas com sucesso!`, 'success');
         }
     
@@ -421,15 +439,28 @@ autoResizeTextarea() {
             this.queries.forEach((query, index) => {
                 const isActive = index === this.currentQueryIndex;
                 html += `
-                    <div class="query-list-item p-3 ${isActive ? 'active' : ''}" onclick="queryManager.selectQuery(${index})">
-                        <div class="fw-bold">${query.name}</div>
-                        <div class="text-muted small">
-                            ${Object.keys(query.variables).length} variável(is)
+                    <div class="query-list-item p-3 ${isActive ? 'active' : ''}" 
+                         draggable="true"
+                         data-index="${index}"
+                         onclick="queryManager.selectQuery(${index})">
+                        <div class="d-flex align-items-start">
+                            <div class="drag-handle me-2">
+                                <i class="fas fa-grip-vertical"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">${query.name}</div>
+                                <div class="text-muted small">
+                                    ${Object.keys(query.variables).length} variável(is)
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
             });
             queryList.innerHTML = html;
+            
+            // Adicionar event listeners de drag and drop
+            this.attachDragListeners();
         }
 
         // Atualizar botões
@@ -437,6 +468,90 @@ autoResizeTextarea() {
         document.getElementById('saveBtn').disabled = !hasQuery;
         document.getElementById('copyBtn').disabled = !hasQuery;
         document.getElementById('deleteBtn').disabled = !hasQuery;
+    }
+
+    attachDragListeners() {
+        const items = document.querySelectorAll('.query-list-item');
+        
+        items.forEach(item => {
+            item.addEventListener('dragstart', (e) => this.handleDragStart(e));
+            item.addEventListener('dragover', (e) => this.handleDragOver(e));
+            item.addEventListener('dragenter', (e) => this.handleDragEnter(e));
+            item.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+            item.addEventListener('drop', (e) => this.handleDrop(e));
+            item.addEventListener('dragend', (e) => this.handleDragEnd(e));
+        });
+    }
+
+    handleDragStart(e) {
+        const item = e.currentTarget;
+        this.draggedIndex = parseInt(item.dataset.index);
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', item.innerHTML);
+    }
+
+    handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+    }
+
+    handleDragEnter(e) {
+        const item = e.currentTarget;
+        if (item.classList.contains('query-list-item')) {
+            item.classList.add('drag-over');
+        }
+    }
+
+    handleDragLeave(e) {
+        const item = e.currentTarget;
+        item.classList.remove('drag-over');
+    }
+
+    handleDrop(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        const item = e.currentTarget;
+        const dropIndex = parseInt(item.dataset.index);
+        
+        if (this.draggedIndex !== dropIndex) {
+            this.reorderQueries(this.draggedIndex, dropIndex);
+        }
+        
+        item.classList.remove('drag-over');
+        return false;
+    }
+
+    handleDragEnd(e) {
+        const items = document.querySelectorAll('.query-list-item');
+        items.forEach(item => {
+            item.classList.remove('dragging', 'drag-over');
+        });
+    }
+
+    reorderQueries(fromIndex, toIndex) {
+        // Salvar o ID da query atualmente selecionada
+        const selectedQueryId = this.currentQueryIndex >= 0 ? this.queries[this.currentQueryIndex].id : null;
+        
+        // Mover o elemento no array
+        const movedQuery = this.queries.splice(fromIndex, 1)[0];
+        this.queries.splice(toIndex, 0, movedQuery);
+        
+        // Atualizar os atributos order
+        this.queries.forEach((query, index) => {
+            query.order = index;
+        });
+        
+        // Restaurar a seleção da query atual
+        if (selectedQueryId !== null) {
+            this.currentQueryIndex = this.queries.findIndex(q => q.id === selectedQueryId);
+        }
+        
+        // Salvar e atualizar UI
+        this.saveQueries();
+        this.updateUI();
     }
 
     showToast(message, type = 'info') {
