@@ -1,5 +1,6 @@
-// Monaco Editor instance
+// Monaco Editor instances
 let monacoEditor = null;
+let monacoPreviewEditor = null;
 
 // Inicialização do Monaco Editor
 function initMonacoEditor() {
@@ -41,16 +42,50 @@ function initMonacoEditor() {
             }
         });
         
+        // Criar editor de preview (somente leitura)
+        const previewContainer = document.getElementById('monacoPreviewContainer');
+        monacoPreviewEditor = monaco.editor.create(previewContainer, {
+            value: '-- A query processada aparecerá aqui...',
+            language: 'sql',
+            theme: theme,
+            automaticLayout: true,
+            fontSize: 14,
+            lineHeight: 1.5,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            renderLineHighlight: 'none',
+            selectionHighlight: false,
+            occurrencesHighlight: false,
+            wordWrap: 'on',
+            wrappingIndent: 'indent',
+            folding: true,
+            lineNumbers: 'on',
+            glyphMargin: false,
+            showFoldingControls: 'mouseover',
+            readOnly: true,
+            contextmenu: false,
+            quickSuggestions: false,
+            suggestOnTriggerCharacters: false,
+            acceptSuggestionOnEnter: 'off',
+            tabCompletion: 'off',
+            wordBasedSuggestions: false,
+            parameterHints: { enabled: false },
+            hover: { enabled: false }
+        });
+        
         // Redimensionar quando a janela muda de tamanho
         window.addEventListener('resize', () => {
             if (monacoEditor) {
                 monacoEditor.layout();
             }
+            if (monacoPreviewEditor) {
+                monacoPreviewEditor.layout();
+            }
         });
         
         // Aplicar tema quando mudado
         window.addEventListener('themeChanged', (e) => {
-            if (monacoEditor) {
+            if (monacoEditor || monacoPreviewEditor) {
                 const newTheme = e.detail.theme === 'dark' ? 'vs-dark' : 'vs';
                 monaco.editor.setTheme(newTheme);
             }
@@ -387,10 +422,10 @@ class SQLQueryManager {
     }
 
     updatePreview() {
-        const preview = document.getElementById('queryPreview');
-        
         if (this.currentQueryIndex < 0) {
-            preview.innerHTML = '<span class="text-muted">A query processada aparecerá aqui...</span>';
+            if (monacoPreviewEditor) {
+                monacoPreviewEditor.setValue('-- A query processada aparecerá aqui...');
+            }
             return;
         }
 
@@ -404,9 +439,10 @@ class SQLQueryManager {
             processedSQL = processedSQL.replace(regex, value);
         });
 
-        // Highlight básico de SQL
-        processedSQL = this.highlightSQL(processedSQL);
-        preview.innerHTML = processedSQL || '<span class="text-muted">Query vazia...</span>';
+        // Atualizar Monaco Editor de preview
+        if (monacoPreviewEditor) {
+            monacoPreviewEditor.setValue(processedSQL || '-- Query vazia...');
+        }
     }
 
     handleQueryInput() {
