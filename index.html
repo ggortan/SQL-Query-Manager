@@ -51,8 +51,8 @@
 
             </div>
             
-            <!-- Editor Central -->
-            <div class="col-md-6 query-editor p-0">
+            <!-- Editor Central com Abas -->
+            <div class="col-md-6 query-editor p-0 d-flex flex-column">
                 <div class="section-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0"><i class="fas fa-code me-2"></i>Editor SQL</h6>
                     <div class="btn-group-custom d-flex">
@@ -67,26 +67,44 @@
                         </button>
                     </div>
                 </div>
-                
-                <div class="p-3 flex-grow-1 d-flex flex-column query-section">
+                <!-- Abas -->
+                <ul class="nav nav-tabs sql-tabs" id="editorTabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-sql" data-bs-toggle="tab" data-bs-target="#tabPanel-sql" type="button" role="tab" aria-controls="tabPanel-sql" aria-selected="true">
+                      <i class="fas fa-pen"></i> Editor SQL
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-preview" data-bs-toggle="tab" data-bs-target="#tabPanel-preview" type="button" role="tab" aria-controls="tabPanel-preview" aria-selected="false">
+                      <i class="fas fa-eye"></i> Preview
+                    </button>
+                  </li>
+                </ul>
+                <div class="tab-content flex-grow-1 d-flex flex-column p-3 query-section" id="editorTabsContent">
+                  <div class="tab-pane fade show active flex-grow-1 d-flex flex-column" id="tabPanel-sql" role="tabpanel" aria-labelledby="tab-sql">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nome da Query:</label>
                         <input type="text" class="form-control" id="queryName" placeholder="Digite o nome da query..." onchange="updateCurrentQuery()">
                     </div>
-                    
-                    <div class="mb-3 flex-grow-1 d-flex flex-column">
+                    <div class="mb-3 flex-grow-1 d-flex flex-column position-relative">
                         <label class="form-label fw-bold">SQL Query:</label>
-                        <textarea class="sql-editor flex-grow-1" id="queryEditor" placeholder="-- Digite sua query SQL aqui
+                        <div class="editor-highlight-wrapper flex-grow-1 position-relative">
+                          <!-- Overlay de syntax highlight será inserido via JS -->
+                          <pre class="editor-highlight-output"></pre>
+                          <textarea class="sql-editor flex-grow-1 position-absolute top-0 start-0 w-100 h-100" id="queryEditor" placeholder="-- Digite sua query SQL aqui
                         -- Use [variavel] para criar variáveis dinâmicas
                         -- Exemplo: SELECT * FROM usuarios WHERE id = [user_id] AND status = '[status]'" oninput="handleQueryInput()"></textarea>
+                        </div>
                     </div>
-                    
+                  </div>
+                  <div class="tab-pane fade flex-grow-1 d-flex flex-column" id="tabPanel-preview" role="tabpanel" aria-labelledby="tab-preview">
                     <div class="mb-2">
                         <label class="form-label fw-bold">Preview com Variáveis:</label>
                         <div class="sql-preview" id="queryPreview">
                             <span class="text-muted">A query processada aparecerá aqui...</span>
                         </div>
                     </div>
+                  </div>
                 </div>
             </div>
             

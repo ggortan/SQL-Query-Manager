@@ -1,3 +1,86 @@
+/* Abas do editor SQL */
+.sql-tabs {
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 0;
+}
+.sql-tabs .nav-link {
+        color: var(--text-secondary);
+        font-weight: 500;
+        border: none;
+        border-bottom: 2px solid transparent;
+        background: none;
+        transition: color 0.2s, border-color 0.2s;
+}
+.sql-tabs .nav-link.active {
+        color: #0d6efd;
+        border-bottom: 2px solid #0d6efd;
+        background: var(--bg-primary);
+}
+.sql-tabs .nav-link:focus {
+        outline: none;
+        box-shadow: none;
+}
+
+/* Overlay de syntax highlight no editor */
+.editor-highlight-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 150px;
+        flex: 1 1 auto;
+}
+.editor-highlight-output {
+        pointer-events: none;
+        user-select: none;
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 1rem;
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-all;
+        background: transparent;
+        color: transparent;
+        z-index: 1;
+        overflow-y: auto;
+}
+.sql-editor {
+        background: transparent;
+        color: var(--text-primary);
+        position: relative;
+        z-index: 2;
+        /* O resto já está definido acima */
+}
+
+/* Syntax highlight para variáveis customizadas */
+.sql-variable {
+        color: #b8860b;
+        background: #fffbe6;
+        border-radius: 0.2em;
+        padding: 0 0.15em;
+        font-weight: 600;
+        border: 1px solid #ffeaa7;
+        transition: color 0.3s, background 0.3s, border 0.3s;
+}
+
+@media (max-width: 991.98px) {
+    .main-container {
+        height: auto;
+    }
+    .sidebar, .query-editor, .variables-panel {
+        height: auto;
+        min-height: 0;
+    }
+    .query-section, .variables-content {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+}
 :root {
     /* Light theme colors */
     --bg-primary: #ffffff;
