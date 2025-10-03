@@ -55,6 +55,11 @@ function initMonacoEditor() {
                 monaco.editor.setTheme(newTheme);
             }
         });
+        
+        // Carregar primeira query se existir após Monaco estar pronto
+        if (queryManager && queryManager.queries.length > 0) {
+            queryManager.selectQuery(0);
+        }
     });
 }
 
@@ -411,7 +416,7 @@ class SQLQueryManager {
 
     highlightSQL(sql) {
         // Palavras-chave SQL
-        const keywords = ['SELECT', 'FROM', 'WHERE', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'AND', 'OR', 'ORDER', 'BY', 'GROUP', 'HAVING', 'INSERT', 'UPDATE', 'DELETE', 'AS', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MAX', 'MIN'];
+        const keywords = ['USE','SELECT', 'FROM', 'WHERE', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'AND', 'OR', 'ORDER', 'BY', 'GROUP', 'HAVING', 'INSERT', 'UPDATE', 'DELETE', 'AS', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MAX', 'MIN'];
         
         let highlighted = sql;
         
@@ -833,19 +838,11 @@ function confirmImport(mode) {
     queryManager.performImport(mode);
 }
 
-// Carregar primeira query se existir
-if (queryManager.queries.length > 0) {
-    queryManager.selectQuery(0);
-}
+// Carregar primeira query será feito após Monaco Editor estar pronto
 
 // Função global para o input
 function handleQueryInput() {
     queryManager.handleQueryInput();
 }
 
-// Listener para redimensionar textarea quando a janela muda de tamanho
-window.addEventListener('resize', () => {
-    if (queryManager.currentQueryIndex >= 0) {
-        setTimeout(() => queryManager.autoResizeTextarea(), 10);
-    }
-});
+// O redimensionamento do Monaco Editor é feito automaticamente com automaticLayout: true
