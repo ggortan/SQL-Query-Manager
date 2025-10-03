@@ -1,54 +1,3 @@
-// --- Syntax Highlighting Overlay e Abas ---
-function syncEditorHighlight() {
-    const textarea = document.getElementById('queryEditor');
-    const overlay = document.querySelector('.editor-highlight-output');
-    if (!textarea || !overlay) return;
-    // Pega o valor do textarea e aplica highlight
-    let value = textarea.value || '';
-    overlay.innerHTML = queryManager ? queryManager.highlightSQL(value) : value;
-    // Sincroniza scroll
-    overlay.scrollTop = textarea.scrollTop;
-    overlay.scrollLeft = textarea.scrollLeft;
-}
-
-// Sincronizar overlay ao digitar e ao rolar
-document.addEventListener('DOMContentLoaded', function() {
-    const textarea = document.getElementById('queryEditor');
-    if (textarea) {
-        textarea.addEventListener('input', syncEditorHighlight);
-        textarea.addEventListener('scroll', syncEditorHighlight);
-        // Inicializa overlay
-        syncEditorHighlight();
-    }
-    // Abas Bootstrap: garantir que o overlay seja atualizado ao trocar para o editor
-    const tabSql = document.getElementById('tab-sql');
-    if (tabSql) {
-        tabSql.addEventListener('shown.bs.tab', function() {
-            setTimeout(syncEditorHighlight, 10);
-        });
-    }
-});
-
-// Atualizar overlay ao carregar query
-const originalLoadQueryInEditor = SQLQueryManager.prototype.loadQueryInEditor;
-SQLQueryManager.prototype.loadQueryInEditor = function() {
-    originalLoadQueryInEditor.call(this);
-    setTimeout(syncEditorHighlight, 10);
-};
-
-// Atualizar overlay ao atualizar query
-const originalUpdateCurrentQuery = SQLQueryManager.prototype.updateCurrentQuery;
-SQLQueryManager.prototype.updateCurrentQuery = function() {
-    originalUpdateCurrentQuery.call(this);
-    setTimeout(syncEditorHighlight, 10);
-};
-
-// Atualizar overlay ao manipular input
-const originalHandleQueryInput = SQLQueryManager.prototype.handleQueryInput;
-SQLQueryManager.prototype.handleQueryInput = function() {
-    if (originalHandleQueryInput) originalHandleQueryInput.call(this);
-    setTimeout(syncEditorHighlight, 10);
-};
 class ThemeManager {
     constructor() {
         this.STORAGE_KEY = 'sqlQueryManager_theme';
@@ -371,18 +320,20 @@ autoResizeTextarea() {
     highlightSQL(sql) {
         // Palavras-chave SQL
         const keywords = ['SELECT', 'FROM', 'WHERE', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'AND', 'OR', 'ORDER', 'BY', 'GROUP', 'HAVING', 'INSERT', 'UPDATE', 'DELETE', 'AS', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MAX', 'MIN'];
+        
         let highlighted = sql;
-        // Variáveis customizadas [nome]
-        highlighted = highlighted.replace(/\[([a-zA-Z0-9_]+)\]/g, '<span class="sql-variable">[$1]</span>');
-        // Strings
-        highlighted = highlighted.replace(/'([^']*)'/g, '<span class="sql-string">\'$1\'</span>');
-        // Comentários
-        highlighted = highlighted.replace(/--(.*)$/gm, '<span class="sql-comment">--$1</span>');
-        // Palavras-chave (após variáveis para não afetar dentro de variáveis)
+        
         keywords.forEach(keyword => {
             const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
             highlighted = highlighted.replace(regex, `<span class="sql-keyword">${keyword.toUpperCase()}</span>`);
         });
+
+        // Strings
+        highlighted = highlighted.replace(/'([^']*)'/g, '<span class="sql-string">\'$1\'</span>');
+        
+        // Comentários
+        highlighted = highlighted.replace(/--(.*)$/gm, '<span class="sql-comment">--$1</span>');
+
         return highlighted;
     }
 
