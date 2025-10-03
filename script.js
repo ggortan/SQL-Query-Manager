@@ -9,11 +9,15 @@ function showEditorTab(tab) {
         btnPreview.classList.remove('active');
         panelSql.classList.add('show');
         panelPreview.classList.remove('show');
+        panelSql.style.display = 'flex';
+        panelPreview.style.display = 'none';
     } else {
         btnSql.classList.remove('active');
         btnPreview.classList.add('active');
         panelSql.classList.remove('show');
         panelPreview.classList.add('show');
+        panelSql.style.display = 'none';
+        panelPreview.style.display = 'flex';
     }
 }
 
