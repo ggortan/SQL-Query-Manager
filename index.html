@@ -78,13 +78,9 @@
                                                     <label class="form-label fw-bold">Nome da Query:</label>
                                                     <input type="text" class="form-control" id="queryName" placeholder="Digite o nome da query..." onchange="updateCurrentQuery()">
                                             </div>
-                                            <div class="flex-grow-1 d-flex flex-column position-relative" style="min-height:0;">
+                                            <div class="flex-grow-1 d-flex flex-column" style="min-height:0;">
                                                     <label class="form-label fw-bold">SQL Query:</label>
-                                                    <div class="editor-highlight-wrapper flex-grow-1 position-relative" style="min-height:0;">
-                                                        <pre class="editor-highlight-output"></pre>
-                                                        <textarea spellcheck="false" class="sql-editor flex-grow-1 position-absolute top-0 start-0 w-100 h-100" id="queryEditor" placeholder="-- Digite sua query SQL aqui
-                                                    -- Use [variavel] para criar variáveis dinâmicas
-                                                    -- Exemplo: SELECT * FROM usuarios WHERE id = [user_id] AND status = '[status]'" oninput="handleQueryInput()"></textarea>
+                                                    <div class="monaco-editor-container flex-grow-1" id="monacoContainer" style="min-height:0;">
                                                     </div>
                                             </div>
                                         </div>
@@ -190,6 +186,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 

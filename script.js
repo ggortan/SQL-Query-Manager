@@ -1,3 +1,63 @@
+// Monaco Editor instance
+let monacoEditor = null;
+
+// Inicialização do Monaco Editor
+function initMonacoEditor() {
+    require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+    
+    require(['vs/editor/editor.main'], function () {
+        const container = document.getElementById('monacoContainer');
+        
+        // Configurar tema baseado no tema atual
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const theme = isDark ? 'vs-dark' : 'vs';
+        
+        monacoEditor = monaco.editor.create(container, {
+            value: '-- Digite sua query SQL aqui\n-- Use [variavel] para criar variáveis dinâmicas\n-- Exemplo: SELECT * FROM usuarios WHERE id = [user_id] AND status = \'[status]\'',
+            language: 'sql',
+            theme: theme,
+            automaticLayout: true,
+            fontSize: 14,
+            lineHeight: 1.5,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            renderLineHighlight: 'line',
+            selectionHighlight: false,
+            occurrencesHighlight: false,
+            wordWrap: 'on',
+            wrappingIndent: 'indent',
+            formatOnPaste: true,
+            formatOnType: true,
+            folding: true,
+            lineNumbers: 'on',
+            glyphMargin: false,
+            showFoldingControls: 'mouseover'
+        });
+        
+        // Listener para mudanças no conteúdo
+        monacoEditor.onDidChangeModelContent(() => {
+            if (queryManager) {
+                queryManager.handleQueryInput();
+            }
+        });
+        
+        // Redimensionar quando a janela muda de tamanho
+        window.addEventListener('resize', () => {
+            if (monacoEditor) {
+                monacoEditor.layout();
+            }
+        });
+        
+        // Aplicar tema quando mudado
+        window.addEventListener('themeChanged', (e) => {
+            if (monacoEditor) {
+                const newTheme = e.detail.theme === 'dark' ? 'vs-dark' : 'vs';
+                monaco.editor.setTheme(newTheme);
+            }
+        });
+    });
+}
+
 // Alternância de abas customizadas do editor central
 function showEditorTab(tab) {
     const btnSql = document.getElementById('tab-sql');
@@ -23,6 +83,9 @@ function showEditorTab(tab) {
 
 // Inicialização: sempre mostrar SQL ao carregar
 document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar Monaco Editor
+    initMonacoEditor();
+    
     // Aguarda um pouco para garantir que todos os elementos estejam carregados
     setTimeout(() => {
         showEditorTab('sql');
@@ -106,19 +169,27 @@ class ThemeManager {
         });
 
         // Apply theme
+        let effectiveTheme = 'light';
         if (theme === 'auto') {
             // Use system preference
             const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             if (prefersDark) {
                 htmlElement.setAttribute('data-theme', 'dark');
+                effectiveTheme = 'dark';
             } else {
                 htmlElement.removeAttribute('data-theme');
+                effectiveTheme = 'light';
             }
         } else if (theme === 'dark') {
             htmlElement.setAttribute('data-theme', 'dark');
+            effectiveTheme = 'dark';
         } else {
             htmlElement.removeAttribute('data-theme');
+            effectiveTheme = 'light';
         }
+        
+        // Disparar evento para componentes que precisam reagir à mudança de tema
+        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: effectiveTheme } }));
     }
 
     getCurrentTheme() {
@@ -223,12 +294,14 @@ class SQLQueryManager {
         
         const query = this.queries[this.currentQueryIndex];
         document.getElementById('queryName').value = query.name;
-        document.getElementById('queryEditor').value = query.sql;
+        
+        // Atualizar Monaco Editor
+        if (monacoEditor) {
+            monacoEditor.setValue(query.sql || '');
+        }
+        
         this.updateVariablesPanel();
         this.updatePreview();
-        
-        // Auto-resize após carregar
-        setTimeout(() => this.autoResizeTextarea(), 10);
     }
 
     updateCurrentQuery() {
@@ -236,7 +309,11 @@ class SQLQueryManager {
         
         const query = this.queries[this.currentQueryIndex];
         query.name = document.getElementById('queryName').value;
-        query.sql = document.getElementById('queryEditor').value;
+        
+        // Obter conteúdo do Monaco Editor
+        if (monacoEditor) {
+            query.sql = monacoEditor.getValue();
+        }
         
         // Atualizar variáveis baseado na query
         const variables = this.extractVariables(query.sql);
@@ -328,24 +405,9 @@ class SQLQueryManager {
     }
 
     handleQueryInput() {
-    this.updateCurrentQuery();
-    this.updatePreview();
-    this.autoResizeTextarea();
-}
-
-autoResizeTextarea() {
-    const textarea = document.getElementById('queryEditor');
-    textarea.style.height = 'auto';
-    
-    // Calcular altura mínima e máxima
-    const minHeight = 150; // altura mínima em pixels
-    const maxHeight = window.innerHeight * 0.6; // máximo 60% da altura da tela
-    
-    const scrollHeight = textarea.scrollHeight;
-    const newHeight = Math.max(minHeight, Math.min(scrollHeight + 10, maxHeight));
-    
-    textarea.style.height = newHeight + 'px';
-}
+        this.updateCurrentQuery();
+        this.updatePreview();
+    }
 
     highlightSQL(sql) {
         // Palavras-chave SQL
