@@ -61,6 +61,7 @@ body {
 
 .main-container {
     height: 100vh;
+    min-height: 0;
     overflow: hidden;
 }
 
@@ -68,6 +69,7 @@ body {
     background: var(--bg-primary);
     border-right: 1px solid var(--border-color);
     height: 100vh;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -76,6 +78,7 @@ body {
 .query-editor {
     background: var(--bg-primary);
     height: 100vh;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s ease;
@@ -83,19 +86,23 @@ body {
 
 .query-section{
     overflow-y: auto;
+    min-height: 0;
+    flex: 1 1 0%;
 }
 
 .variables-panel {
     background: var(--bg-primary);
     border-left: 1px solid var(--border-color);
     height: 100vh;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .variables-content {
-    flex: 1;
+    flex: 1 1 0%;
+    min-height: 0;
     overflow-y: auto;
 }
 
@@ -144,14 +151,15 @@ body {
 
 .sql-editor {
     font-family: 'Courier New', monospace;
-    resize: vertical;
+    resize: none;
     border: 1px solid var(--border-color);
     border-radius: 0.375rem;
     padding: 1rem;
     background-color: var(--editor-bg);
     color: var(--text-primary);
-    min-height: 150px;
-    height: 150px;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
     overflow-y: auto;
     transition: height 0.1s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
     line-height: 1.5;
@@ -168,6 +176,9 @@ body {
     white-space: pre-wrap;
     word-break: break-all;
     transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
 }
 
 .variable-input {
