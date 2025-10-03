@@ -1,3 +1,109 @@
+class ThemeManager {
+    constructor() {
+        this.STORAGE_KEY = 'sqlQueryManager_theme';
+        this.theme = this.loadTheme();
+        this.init();
+    }
+
+    init() {
+        // Set initial theme
+        this.applyTheme(this.theme);
+
+        // Add event listeners to theme buttons
+        document.querySelectorAll('.theme-option').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const theme = e.currentTarget.dataset.theme;
+                this.setTheme(theme);
+            });
+
+            // Keyboard accessibility
+            button.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const theme = e.currentTarget.dataset.theme;
+                    this.setTheme(theme);
+                }
+            });
+        });
+
+        // Listen for system theme changes
+        if (window.matchMedia) {
+            const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            darkModeQuery.addEventListener('change', (e) => {
+                if (this.theme === 'auto') {
+                    this.applyTheme('auto');
+                }
+            });
+        }
+    }
+
+    loadTheme() {
+        try {
+            const stored = localStorage.getItem(this.STORAGE_KEY);
+            return stored || 'auto';
+        } catch (e) {
+            console.error('Error loading theme:', e);
+            return 'auto';
+        }
+    }
+
+    saveTheme(theme) {
+        try {
+            localStorage.setItem(this.STORAGE_KEY, theme);
+        } catch (e) {
+            console.error('Error saving theme:', e);
+        }
+    }
+
+    setTheme(theme) {
+        this.theme = theme;
+        this.saveTheme(theme);
+        this.applyTheme(theme);
+    }
+
+    applyTheme(theme) {
+        const htmlElement = document.documentElement;
+        
+        // Update active button
+        document.querySelectorAll('.theme-option').forEach(button => {
+            if (button.dataset.theme === theme) {
+                button.classList.add('active');
+                button.setAttribute('aria-pressed', 'true');
+            } else {
+                button.classList.remove('active');
+                button.setAttribute('aria-pressed', 'false');
+            }
+        });
+
+        // Apply theme
+        if (theme === 'auto') {
+            // Use system preference
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDark) {
+                htmlElement.setAttribute('data-theme', 'dark');
+            } else {
+                htmlElement.removeAttribute('data-theme');
+            }
+        } else if (theme === 'dark') {
+            htmlElement.setAttribute('data-theme', 'dark');
+        } else {
+            htmlElement.removeAttribute('data-theme');
+        }
+    }
+
+    getCurrentTheme() {
+        return this.theme;
+    }
+
+    getEffectiveTheme() {
+        if (this.theme === 'auto') {
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            return prefersDark ? 'dark' : 'light';
+        }
+        return this.theme;
+    }
+}
+
 class SQLQueryManager {
     constructor() {
         this.queries = [];
@@ -586,6 +692,7 @@ autoResizeTextarea() {
 }
 
 // Inicializar aplicação
+const themeManager = new ThemeManager();
 const queryManager = new SQLQueryManager();
 
 // Funções globais para os botões
