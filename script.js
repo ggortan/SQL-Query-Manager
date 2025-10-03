@@ -23,7 +23,10 @@ function showEditorTab(tab) {
 
 // Inicialização: sempre mostrar SQL ao carregar
 document.addEventListener('DOMContentLoaded', function() {
-    showEditorTab('sql');
+    // Aguarda um pouco para garantir que todos os elementos estejam carregados
+    setTimeout(() => {
+        showEditorTab('sql');
+    }, 100);
 });
 class ThemeManager {
     constructor() {

@@ -14,6 +14,9 @@
     outline: none;
     cursor: pointer;
 }
+.editor-tab-btn:hover:not(.active) {
+    background: var(--hover-bg);
+}
 .editor-tab-btn.active {
     color: #0d6efd;
     border-bottom: 2.5px solid #0d6efd;
@@ -22,19 +25,21 @@
 }
 .editor-tab-btn:focus {
     outline: none;
-    background: var(--hover-bg);
 }
 .editor-tabs-content {
     min-height: 0;
     flex: 1 1 0%;
+    padding: 1rem;
 }
 .editor-tab-panel {
     min-height: 0;
     flex: 1 1 0%;
-    display: none;
+    display: none !important;
+    flex-direction: column;
 }
 .editor-tab-panel.show {
     display: flex !important;
+    flex-direction: column;
 }
 :root {
     /* Light theme colors */
