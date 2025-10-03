@@ -1,6 +1,8 @@
 /* Abas customizadas do editor central */
 .editor-tabs-bar {
     gap: 0;
+    padding: 0.5rem 1rem;
+    min-height: 60px;
 }
 .editor-tab-btn {
     background: none;
@@ -8,11 +10,12 @@
     border-bottom: 2px solid transparent;
     color: var(--text-secondary);
     font-weight: 500;
-    padding: 0.75rem 1.5rem 0.5rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     font-size: 1rem;
     transition: color 0.2s, border-color 0.2s, background 0.2s;
     outline: none;
     cursor: pointer;
+    border-radius: 0.375rem 0.375rem 0 0;
 }
 .editor-tab-btn:hover:not(.active) {
     background: var(--hover-bg);
