@@ -55,14 +55,19 @@
     --hover-bg: #f8f9fa;
     --active-bg: #e3f2fd;
     --editor-bg: #f8f9fa;
-    --preview-bg: #1e1e1e;
-    --preview-text: #d4d4d4;
+    --preview-bg: #f8f9fa;
+    --preview-text: #212529;
     --variable-tag-bg: #fff3cd;
     --variable-tag-text: #856404;
     --variable-tag-border: #ffeaa7;
     --empty-state-icon: #dee2e6;
-    --sql-keyword: #0077aa;
-    --sql-string: #dd4a68;
+    --sql-keyword: #0000ff;
+    --sql-string: #ff0000;
+    --sql-comment: #008000;
+    --sql-function: #ff00ff;
+    --sql-number: #b8860b;
+    --sql-operator: #808080;
+    --sql-variable: #b8860b;
     
     /* Scrollbar colors */
     --scrollbar-track: #f1f1f1;
@@ -82,14 +87,19 @@
     --hover-bg: #2d2d30;
     --active-bg: #094771;
     --editor-bg: #1e1e1e;
-    --preview-bg: #0d0d0d;
-    --preview-text: #d4d4d4;
+    --preview-bg: #1e1e1e;
+    --preview-text: #e0e0e0;
     --variable-tag-bg: #4d3800;
     --variable-tag-text: #ffd966;
     --variable-tag-border: #665000;
     --empty-state-icon: #3e3e42;
-    --sql-keyword: #4ec9b0;
+    --sql-keyword: #569cd6;
     --sql-string: #ce9178;
+    --sql-comment: #6a9955;
+    --sql-function: #dcdcaa;
+    --sql-number: #b5cea8;
+    --sql-operator: #d4d4d4;
+    --sql-variable: #9cdcfe;
     
     /* Scrollbar colors */
     --scrollbar-track: #2d2d30;
@@ -306,9 +316,34 @@ body {
 }
 
 .sql-comment {
-    color: var(--text-muted);
+    color: var(--sql-comment);
     font-style: italic;
     transition: color 0.3s ease;
+}
+
+.sql-function {
+    color: var(--sql-function);
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.sql-number {
+    color: var(--sql-number);
+    transition: color 0.3s ease;
+}
+
+.sql-operator {
+    color: var(--sql-operator);
+    transition: color 0.3s ease;
+}
+
+.sql-variable {
+    color: var(--sql-variable);
+    background: rgba(184, 134, 11, 0.1);
+    border-radius: 0.2em;
+    padding: 0 0.15em;
+    font-weight: 600;
+    transition: color 0.3s, background 0.3s;
 }
 
 .btn-action {
