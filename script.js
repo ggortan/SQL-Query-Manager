@@ -1,3 +1,26 @@
+// Alternância de abas customizadas do editor central
+function showEditorTab(tab) {
+    const btnSql = document.getElementById('tab-sql');
+    const btnPreview = document.getElementById('tab-preview');
+    const panelSql = document.getElementById('tabPanel-sql');
+    const panelPreview = document.getElementById('tabPanel-preview');
+    if (tab === 'sql') {
+        btnSql.classList.add('active');
+        btnPreview.classList.remove('active');
+        panelSql.classList.add('show');
+        panelPreview.classList.remove('show');
+    } else {
+        btnSql.classList.remove('active');
+        btnPreview.classList.add('active');
+        panelSql.classList.remove('show');
+        panelPreview.classList.add('show');
+    }
+}
+
+// Inicialização: sempre mostrar SQL ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+    showEditorTab('sql');
+});
 class ThemeManager {
     constructor() {
         this.STORAGE_KEY = 'sqlQueryManager_theme';

@@ -1,3 +1,41 @@
+/* Abas customizadas do editor central */
+.editor-tabs-bar {
+    gap: 0;
+}
+.editor-tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem 0.5rem 1.5rem;
+    font-size: 1rem;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    outline: none;
+    cursor: pointer;
+}
+.editor-tab-btn.active {
+    color: #0d6efd;
+    border-bottom: 2.5px solid #0d6efd;
+    background: var(--bg-primary);
+    font-weight: 600;
+}
+.editor-tab-btn:focus {
+    outline: none;
+    background: var(--hover-bg);
+}
+.editor-tabs-content {
+    min-height: 0;
+    flex: 1 1 0%;
+}
+.editor-tab-panel {
+    min-height: 0;
+    flex: 1 1 0%;
+    display: none;
+}
+.editor-tab-panel.show {
+    display: flex !important;
+}
 :root {
     /* Light theme colors */
     --bg-primary: #ffffff;
