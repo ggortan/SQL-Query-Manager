@@ -18,6 +18,11 @@
     --empty-state-icon: #dee2e6;
     --sql-keyword: #0077aa;
     --sql-string: #dd4a68;
+    
+    /* Scrollbar colors */
+    --scrollbar-track: #f1f1f1;
+    --scrollbar-thumb: #c1c1c1;
+    --scrollbar-thumb-hover: #a8a8a8;
 }
 
 [data-theme="dark"] {
@@ -40,6 +45,11 @@
     --empty-state-icon: #3e3e42;
     --sql-keyword: #4ec9b0;
     --sql-string: #ce9178;
+    
+    /* Scrollbar colors */
+    --scrollbar-track: #2d2d30;
+    --scrollbar-thumb: #424242;
+    --scrollbar-thumb-hover: #4e4e4e;
 }
 
 body {
@@ -349,4 +359,32 @@ body {
 .text-muted {
     color: var(--text-secondary) !important;
     transition: color 0.3s ease;
+}
+
+/* Custom Scrollbars */
+/* Webkit browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 10px;
+    border: 3px solid var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
