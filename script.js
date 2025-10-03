@@ -610,6 +610,9 @@ class SQLQueryManager {
     copyQuery() {
         if (this.currentQueryIndex < 0) return;
         
+        // Garantir que temos o conteúdo mais atual do Monaco Editor
+        this.updateCurrentQuery();
+        
         const query = this.queries[this.currentQueryIndex];
         let processedSQL = query.sql;
 
