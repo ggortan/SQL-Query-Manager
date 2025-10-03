@@ -50,6 +50,33 @@ body {
     border-left-color: #0d6efd;
 }
 
+.drag-handle {
+    opacity: 0;
+    color: #6c757d;
+    cursor: grab;
+    transition: opacity 0.2s;
+    font-size: 0.9rem;
+    padding-top: 2px;
+}
+
+.query-list-item:hover .drag-handle {
+    opacity: 1;
+}
+
+.query-list-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.query-list-item.drag-over {
+    border-top: 2px solid #0d6efd;
+    background-color: #e7f3ff;
+}
+
+.query-list-item[draggable="true"] {
+    user-select: none;
+}
+
 .sql-editor {
     font-family: 'Courier New', monospace;
     resize: vertical;
