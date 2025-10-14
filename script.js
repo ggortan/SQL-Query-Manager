@@ -885,3 +885,31 @@ function handleQueryInput() {
 }
 
 // O redimensionamento do Monaco Editor é feito automaticamente com automaticLayout: true
+
+// Função para alternar o painel de variáveis
+function toggleVariablesPanel() {
+    const panel = document.querySelector('.variables-panel');
+    const editorColumn = document.getElementById('queryEditorColumn');
+    
+    panel.classList.toggle('collapsed');
+    
+    if (panel.classList.contains('collapsed')) {
+        // Painel colapsado - editor ocupa mais espaço
+        editorColumn.style.flex = '1';
+        editorColumn.style.maxWidth = 'calc(80% - 50px)';
+    } else {
+        // Painel expandido - editor volta ao tamanho original
+        editorColumn.style.flex = '';
+        editorColumn.style.maxWidth = '';
+    }
+    
+    // Redimensionar Monaco Editor após mudança de layout
+    setTimeout(() => {
+        if (monacoEditor) {
+            monacoEditor.layout();
+        }
+        if (monacoPreviewEditor) {
+            monacoPreviewEditor.layout();
+        }
+    }, 300);
+}
